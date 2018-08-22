@@ -1,0 +1,5 @@
+{
+  "HELLO": "Hello",
+  "WORLD": "World",
+  "PARAGRAPH": "Hello {{username}}!"
+}

@@ -8,23 +8,27 @@ app.config(['$translateProvider', function ($translateProvider) {
         prefix: './i18n/',
         suffix: '.json'
     });
-    var lang = navigator.language || navigator.userLanguage;
-    lang = lang.substr(0, 2);
-    // Is this translate "on the fly" ?
-    if (lang === 'zh') {
-        $translateProvider.preferredLanguage('zh');
-    } else if (lang === 'en') {
-        $translateProvider.preferredLanguage('en');
-    } else{
-        $translateProvider.preferredLanguage('en');
+
+    var lang = getLangSetString();
+
+    if (lang.startWith('zh')) {
+        $translateProvider.preferredLanguage('zh_CN');
+    } else if (lang.startWith('en') && lang === 'en-CA') {
+        $translateProvider.preferredLanguage('en_CA');
+    } else if (lang.startWith('en') && lang === 'en-US'){
+        $translateProvider.preferredLanguage('en_US');
+    } else {
+        throw new Error("no default set");
     }
     $translateProvider.useCookieStorage();
+    // Enable escaping of HTML
+    $translateProvider.useSanitizeValueStrategy('escape');
 }]);
 
 app.controller('myCtrl', function($scope,$translate) {
 
     //get lang set up from
-    $scope.lang =  navigator.language || navigator.userLanguage;
+    $scope.lang =  getLangSetString();
 
     // **************************** method ************************
     $scope.translate = function(lang){
@@ -33,3 +37,20 @@ app.controller('myCtrl', function($scope,$translate) {
 
 });
 
+//*****************************Util***********************************
+
+String.prototype.startWith=function(str){
+    var reg=new RegExp("^"+str);
+    return reg.test(this);
+}
+
+String.prototype.endWith=function(str){
+    var reg=new RegExp(str+"$");
+    return reg.test(this);
+}
+
+var getLangSetString = function(){
+    return  navigator.languages[0]
+        || navigator.language || navigator.browserLanguage
+        || navigator.systemLanguage|| navigator.userLanguage;
+}
